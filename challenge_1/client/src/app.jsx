@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDom from 'react-dom';
+import ReactDOM from 'react-dom';
 
 class App extends React.Component {
   constructor(props) {
@@ -8,9 +8,11 @@ class App extends React.Component {
   }
 
   render() {
-    <div>
-      <h1>test</h1>
-    </div>
+    return (
+      <div>
+        <h1>test</h1>
+      </div>
+    )
   }
 }
 
