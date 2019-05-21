@@ -13,7 +13,6 @@ const eventItem = (props) => {
         <br />
         <div>{category1} &gt; {category2}</div>
       </div>
-      {console.log(date)}
     </li>
   )
 }

@@ -14,18 +14,36 @@ class App extends React.Component {
       currPage: 1
     }
     this.pageChange = this.pageChange.bind(this);
+    this.searchDataFromServer = this.searchDataFromServer.bind(this);
   }
 
   getDataFromServer() {
     axios.get(`/events?_page=${this.state.currPage}&_limit=${this.state.dataPerPage}`)
       .then((response) => {
-        console.log(response)
         this.setState({
           data: response.data,
           pageCount: Math.ceil(response.headers["x-total-count"] / this.state.dataPerPage)
         })
       })
       .catch((err) => console.log('Error occurred: ', err));
+  }
+
+  searchDataFromServer(e) {
+    e.preventDefault();
+    const searchTerm = e.target[0].value;
+    if (searchTerm !== '') {
+      e.target[0].value = '';
+      axios.get(`/events?q=${searchTerm}`)
+        .then((response) =>
+          this.setState({
+            data: response.data,
+            pageCount: Math.ceil(response.headers["x-total-count"] / this.state.dataPerPage)
+          })
+        )
+        .catch((err) => console.log('Error occurred: ', err))
+    } else {
+      this.getDataFromServer();
+    }
   }
 
   pageChange(data) {
@@ -41,7 +59,7 @@ class App extends React.Component {
     return (
       <div>
         <nav className='navbar'>
-          <SearchBar className='nav-item'/>
+          <SearchBar className='nav-item' search={this.searchDataFromServer} />
         </nav>
         <div className='container-fluid'>
           <h1 className='text-center'>Historical Events</h1>
