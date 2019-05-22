@@ -7,6 +7,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       cryptocurrency: 'BTC',
+      convertedCurrency: 'USD',
       dateStart: '2019-01-01',
       dateEnd: '2019-05-01',
       chartType: 'line',
@@ -37,6 +38,11 @@ class App extends React.Component {
       options: {
         scales: {
           yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: `Closing prices (${this.state.convertedCurrency})`,
+              fontSize: 14
+            },
             ticks: {
               beginAtZero: true
             }
