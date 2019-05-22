@@ -30,12 +30,22 @@ class App extends React.Component {
           data: this.state.dataPts,
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 0.7)',
-          borderWidth: 1,
+          borderWidth: 3,
           fill: false,
-          steppedLine: true
+          lineTension: 0,
+          pointRadius: 0,
+          steppedLine: false
         }]
       },
       options: {
+        tooltips: {
+          intersect: false
+        },
+        title: {
+          display: true,
+          fontSize: 20,
+          text: `${this.state.cryptocurrency} Prices ${this.state.dateStart} to ${this.state.dateEnd}`
+        },
         scales: {
           yAxes: [{
             scaleLabel: {
@@ -54,12 +64,13 @@ class App extends React.Component {
 
   componentDidMount() {
     this.ctx = this.chartRef.current.getContext('2d');
-    axios.get(`https://api.coindesk.com/v1/bpi/historical/close.json?start=${this.state.dateStart}&end=${this.state.dateEnd}`)
+    axios.get(`/timeframe?start=${this.state.dateStart}&end=${this.state.dateEnd}`)
       .then((res) => {
+        const parsedRes = JSON.parse(res.data.body);
         this.setState({
-          dataLabels: Object.keys(res.data.bpi),
-          dataPts: Object.values(res.data.bpi),
-          disclaimer: res.data.disclaimer
+          dataLabels: Object.keys(parsedRes.bpi),
+          dataPts: Object.values(parsedRes.bpi),
+          disclaimer: parsedRes.disclaimer
         });
       })
       .then(() => this.createChart())
@@ -69,9 +80,10 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <canvas ref={this.chartRef} id='chartCanvas' width='400' height='400'></canvas>
+        <canvas ref={this.chartRef} id='chartCanvas' width='1000' height='400'></canvas>
+        <br />
         <div>
-          {this.state.disclaimer}
+          <a href="https://www.coindesk.com/price/bitcoin">{this.state.disclaimer}</a>
         </div>
       </div>
     )
