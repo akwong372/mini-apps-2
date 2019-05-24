@@ -1,4 +1,5 @@
 import React from 'react';
+import PinPicker from './components/PinPicker.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -10,7 +11,8 @@ class App extends React.Component {
     return (
       <div>
         test
-    </div>
+        <PinPicker />
+      </div>
     )
 
   }
