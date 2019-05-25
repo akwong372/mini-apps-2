@@ -27,7 +27,7 @@ const pinPicker = (props) => (
         </tr>
         <tr>
           <td>
-            <button type="button" onClick={() => props.pinsBowl()}>Bowl</button>
+            <button type="button" onClick={() => props.pinsBowl()} disabled={props.currFrame > 9 ? true : false}>Bowl</button>
           </td>
         </tr>
       </tbody>
