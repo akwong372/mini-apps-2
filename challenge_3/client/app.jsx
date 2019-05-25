@@ -1,12 +1,18 @@
 import React from 'react';
 import PinPicker from './components/PinPicker.jsx';
+import ScoreCard from './components/ScoreCard.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       pinsSelected: 0,
-      pinsRemaining: 10
+      pinsRemaining: 10,
+      totalFrames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      frameScores: ['_', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
+      frameTries: [['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_']],
+      currFrame: 0,
+      totalScore: 0
     }
     this.pinSelect = this.pinSelect.bind(this);
     this.pinsBowl = this.pinsBowl.bind(this);
@@ -27,7 +33,7 @@ class App extends React.Component {
     }
   }
 
-  pinsBowl(){
+  pinsBowl() {
     const pinsSelected = this.state.pinsSelected;
     const pinsRemaining = this.state.pinsRemaining;
     const bowledPins = pinsRemaining - pinsSelected;
@@ -41,7 +47,15 @@ class App extends React.Component {
     return (
       <div>
         Pins remaining: {this.state.pinsRemaining}
-        <PinPicker pinSelect={this.pinSelect} pinsBowl={this.pinsBowl}/>
+        <PinPicker pinSelect={this.pinSelect} pinsBowl={this.pinsBowl} />
+        <hr />
+        <div>
+          <ScoreCard
+            totalScore={this.state.totalScore}
+            frameScores={this.state.frameScores}
+            frameTries={this.state.frameTries}
+          />
+        </div>
       </div>
     );
 
