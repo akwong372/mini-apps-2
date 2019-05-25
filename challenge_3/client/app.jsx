@@ -5,16 +5,18 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      pinsSelected: 0
+      pinsSelected: 0,
+      pinsRemaining: 10
     }
     this.pinSelect = this.pinSelect.bind(this);
+    this.pinsBowl = this.pinsBowl.bind(this);
   }
 
   pinSelect(e) {
     let clickedPins = Number(e.target.value);
-    let currPins = this.state.pinsSelected;
+    let pinsSelected = this.state.pinsSelected;
 
-    if (currPins === clickedPins) {
+    if (pinsSelected === clickedPins) {
       this.setState({
         pinsSelected: 0
       });
@@ -25,11 +27,21 @@ class App extends React.Component {
     }
   }
 
+  pinsBowl(){
+    const pinsSelected = this.state.pinsSelected;
+    const pinsRemaining = this.state.pinsRemaining;
+    const bowledPins = pinsRemaining - pinsSelected;
+
+    this.setState({
+      pinsRemaining: bowledPins
+    });
+  }
+
   render() {
     return (
       <div>
-        test
-        <PinPicker pinSelect={this.pinSelect} />
+        Pins remaining: {this.state.pinsRemaining}
+        <PinPicker pinSelect={this.pinSelect} pinsBowl={this.pinsBowl}/>
       </div>
     );
 

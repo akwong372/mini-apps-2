@@ -25,6 +25,11 @@ const pinPicker = (props) => (
             return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} /></td>
           })}
         </tr>
+        <tr>
+          <td>
+            <button type="button" onClick={() => props.pinsBowl()}>Bowl</button>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
