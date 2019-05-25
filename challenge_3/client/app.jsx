@@ -46,7 +46,13 @@ class App extends React.Component {
       pinsRemaining = 10; //reset pins
     }
 
-    this.setState({ currFrame, pinsRemaining, totalScore, frameScores })
+    this.setState({
+      pinsSelected: 0,
+      currFrame,
+      pinsRemaining,
+      totalScore,
+      frameScores
+    })
 
   }
 
