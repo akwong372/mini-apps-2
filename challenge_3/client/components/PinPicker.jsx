@@ -7,22 +7,22 @@ const pinPicker = (props) => (
       <tbody>
         <tr>
           {[1, 2, 3].map((number) => {
-            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} /></td>
+            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} pinsRemaining={props.pinsRemaining}/></td>
           })}
         </tr>
         <tr>
           {[4, 5, 6].map((number) => {
-            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} /></td>
+            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} pinsRemaining={props.pinsRemaining}/></td>
           })}
         </tr>
         <tr>
           {[7, 8, 9].map((number) => {
-            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} /></td>
+            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} pinsRemaining={props.pinsRemaining}/></td>
           })}
         </tr>
         <tr>
           {[10].map((number) => {
-            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} /></td>
+            return <td key={`button${number}`}><PinPickerButton number={number} pinSelect={props.pinSelect} pinsRemaining={props.pinsRemaining}/></td>
           })}
         </tr>
         <tr>

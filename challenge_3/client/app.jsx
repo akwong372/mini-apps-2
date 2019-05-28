@@ -12,7 +12,8 @@ class App extends React.Component {
       frameScores: ['_', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
       frameTries: [['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_']],
       currFrame: 0,
-      totalScore: 0
+      totalScore: 0,
+      spareStatus: 0
     }
     this.pinSelect = this.pinSelect.bind(this);
     this.pinsBowl = this.pinsBowl.bind(this);
@@ -22,28 +23,49 @@ class App extends React.Component {
   pinSelect(e) {
     let clickedPins = Number(e.target.value);
     let pinsSelected = this.state.pinsSelected;
+    let pinsRemaining = this.state.pinsRemaining;
 
     if (pinsSelected === clickedPins) {
       this.setState({
         pinsSelected: 0
       });
-    } else {
+    } else if (clickedPins <= pinsRemaining) {
       this.setState({
         pinsSelected: clickedPins
+      });
+    } else {
+      this.setState({
+        pinsSelected: pinsRemaining
       });
     }
   }
 
   updateTurn() {
-    let { currFrame, pinsRemaining, totalScore, frameScores } = this.state;
+    let { currFrame, pinsRemaining, totalScore, frameScores, spareStatus } = this.state;
     const currFrameTries = this.state.frameTries[currFrame];
 
     //if tries of current frame are all used
     if (currFrameTries.indexOf('_') < 0) {
-      currFrameTries.forEach((score) => totalScore += score)//update total score
-      frameScores[currFrame] = totalScore//update score for current frame
-      currFrame += 1; //update current frame
-      pinsRemaining = 10; //reset pins
+      if (currFrameTries[0] + currFrameTries[1] === 10) {
+        currFrameTries.forEach((score) => {
+          if (typeof score === 'number') {
+            totalScore += score; //update total score
+          }
+        });
+        frameScores[currFrame] = '_' //update score for current frame
+        currFrame += 1; //update current frame
+        pinsRemaining = 10; //reset pins
+        spareStatus = 1;
+      } else {
+        currFrameTries.forEach((score) => {
+          if (typeof score === 'number') {
+            totalScore += score; //update total score
+          }
+        });
+        frameScores[currFrame] = totalScore//update score for current frame
+        currFrame += 1; //update current frame
+        pinsRemaining = 10; //reset pins
+      }
     }
 
     this.setState({
@@ -51,18 +73,23 @@ class App extends React.Component {
       currFrame,
       pinsRemaining,
       totalScore,
-      frameScores
-    })
-
+      frameScores,
+      spareStatus
+    });
   }
 
   pinsBowl() {
-    const { pinsSelected, pinsRemaining, currFrame } = this.state;
+    let { pinsSelected, pinsRemaining, currFrame, spareStatus, frameScores, totalScore } = this.state;
     let frameTries = this.state.frameTries.slice(); //copy tries per frame
     let currFrameTries = frameTries[currFrame]; //set to tries of current frame
     let pinsAfterBowl = pinsRemaining - pinsSelected;
 
     if (currFrameTries[0] === '_') {
+      if (spareStatus === 1) {
+        totalScore += pinsSelected;
+        frameScores[currFrame - 1] = totalScore;
+        spareStatus = 0;
+      }
       currFrameTries[0] = pinsSelected; //add score to first try
       frameTries[currFrame] = currFrameTries; //update tries at current frame
     } else if (currFrameTries[1] === '_') {
@@ -72,7 +99,9 @@ class App extends React.Component {
 
     this.setState({
       frameTries,
-      pinsRemaining: pinsAfterBowl
+      pinsRemaining: pinsAfterBowl,
+      totalScore,
+      spareStatus
     }, () => this.updateTurn());
   }
 
@@ -83,6 +112,7 @@ class App extends React.Component {
         <br />
         Pins to bowl: {this.state.pinsSelected}
         <PinPicker
+          pinsRemaining={this.state.pinsRemaining}
           pinSelect={this.pinSelect}
           pinsBowl={this.pinsBowl}
           currFrame={this.state.currFrame}
@@ -97,7 +127,6 @@ class App extends React.Component {
         </div>
       </div>
     );
-
   }
 }
 
