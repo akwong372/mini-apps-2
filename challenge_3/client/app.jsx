@@ -22,15 +22,20 @@ class App extends React.Component {
   pinSelect(e) {
     let clickedPins = Number(e.target.value);
     let pinsSelected = this.state.pinsSelected;
+    let pinsRemaining = this.state.pinsRemaining;
 
     if (pinsSelected === clickedPins) {
       this.setState({
         pinsSelected: 0
       });
-    } else {
+    } else if (clickedPins <= pinsRemaining) {
       this.setState({
         pinsSelected: clickedPins
-      });
+      }, () => console.log(this.state.pinsRemaining));
+    } else {
+      this.setState({
+        pinsSelected: pinsRemaining
+      }, () => console.log(this.state.pinsRemaining));
     }
   }
 
@@ -83,6 +88,7 @@ class App extends React.Component {
         <br />
         Pins to bowl: {this.state.pinsSelected}
         <PinPicker
+          pinsRemaining={this.state.pinsRemaining}
           pinSelect={this.pinSelect}
           pinsBowl={this.pinsBowl}
           currFrame={this.state.currFrame}
