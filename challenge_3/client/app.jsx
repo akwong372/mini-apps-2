@@ -56,7 +56,7 @@ class App extends React.Component {
 
     //if tries of current frame are all used
     if (currFrameTries.indexOf('_') < 0 || currFrameTries[0] === 10) {
-      if (framesWithStrikes[currFrame - 1] === currFrame - 1) {
+      if (framesWithStrikes[currFrame - 1] !== undefined) {
         framesWithStrikesBonus[currFrame - 1].forEach((bonus) => totalScore += bonus)
       }
 
@@ -115,9 +115,11 @@ class App extends React.Component {
     let pinsAfterBowl = pinsRemaining - pinsSelected;
 
     if (currFrameTries[0] === '_') {
-      if (pinsAfterBowl === 0) {
-        if (framesWithStrikes[currFrame - 1] === currFrame - 1) {
-          framesWithStrikesBonus[currFrame - 1].push(pinsSelected);
+      if (pinsAfterBowl === 0) { // if strike is bowled
+        for (var i = 0; i < Object.keys(framesWithStrikes).length; i++) {
+          if (framesWithStrikes[i] === i && framesWithStrikesBonus[i].length < 2) { //if the previous frame was a strike
+            framesWithStrikesBonus[i].push(pinsSelected); //add current bowl as bonus points for previous frame
+          }
         }
         framesWithStrikes[currFrame] = currFrame;
         framesWithStrikesBonus[currFrame] = [];
@@ -135,8 +137,8 @@ class App extends React.Component {
         framesWithStrikesBonus[currFrame - 1].push(pinsSelected);
         frameScores[currFrame - 1] = totalScore + framesWithStrikesBonus[currFrame - 1][0] + framesWithStrikesBonus[currFrame - 1][1];
       }
-        currFrameTries[1] = pinsSelected; //add score to second try
-        frameTries[currFrame] = currFrameTries;
+      currFrameTries[1] = pinsSelected; //add score to second try
+      frameTries[currFrame] = currFrameTries;
     }
 
     this.setState({
