@@ -11,6 +11,8 @@ class App extends React.Component {
       totalFrames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       frameScores: ['_', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
       frameTries: [['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_'], ['_', '_']],
+      framesWithStrikes: {},
+      framesWithStrikesBonus: {},
       currFrame: 0,
       totalScore: 0,
       spareStatus: 0
@@ -41,12 +43,29 @@ class App extends React.Component {
   }
 
   updateTurn() {
-    let { currFrame, pinsRemaining, totalScore, frameScores, spareStatus } = this.state;
+    let {
+      currFrame,
+      pinsRemaining,
+      totalScore,
+      frameScores,
+      spareStatus,
+      framesWithStrikes,
+      framesWithStrikesBonus
+    } = this.state;
     const currFrameTries = this.state.frameTries[currFrame];
 
     //if tries of current frame are all used
-    if (currFrameTries.indexOf('_') < 0) {
-      if (currFrameTries[0] + currFrameTries[1] === 10) {
+    if (currFrameTries.indexOf('_') < 0 || currFrameTries[0] === 10) {
+      if (framesWithStrikes[currFrame - 1] !== undefined) {
+        framesWithStrikesBonus[currFrame - 1].forEach((bonus) => totalScore += bonus)
+      }
+
+      if (currFrameTries[0] === 10) { //check for strikes
+        totalScore += 10;
+        frameScores[currFrame] = '_';
+        currFrame += 1; //update current frame
+        pinsRemaining = 10; //reset pins
+      } else if (currFrameTries[0] + currFrameTries[1] === 10 && currFrameTries[0] !== 10) { //check for spares
         currFrameTries.forEach((score) => {
           if (typeof score === 'number') {
             totalScore += score; //update total score
@@ -56,7 +75,7 @@ class App extends React.Component {
         currFrame += 1; //update current frame
         pinsRemaining = 10; //reset pins
         spareStatus = 1;
-      } else {
+      } else { //no spares or strikes
         currFrameTries.forEach((score) => {
           if (typeof score === 'number') {
             totalScore += score; //update total score
@@ -74,25 +93,50 @@ class App extends React.Component {
       pinsRemaining,
       totalScore,
       frameScores,
-      spareStatus
+      spareStatus,
+      framesWithStrikes,
+      framesWithStrikesBonus
     });
   }
 
   pinsBowl() {
-    let { pinsSelected, pinsRemaining, currFrame, spareStatus, frameScores, totalScore } = this.state;
+    let {
+      pinsSelected,
+      pinsRemaining,
+      currFrame,
+      spareStatus,
+      frameScores,
+      totalScore,
+      framesWithStrikes,
+      framesWithStrikesBonus
+    } = this.state;
     let frameTries = this.state.frameTries.slice(); //copy tries per frame
     let currFrameTries = frameTries[currFrame]; //set to tries of current frame
     let pinsAfterBowl = pinsRemaining - pinsSelected;
 
     if (currFrameTries[0] === '_') {
-      if (spareStatus === 1) {
-        totalScore += pinsSelected;
+      if (pinsAfterBowl === 0) { // if strike is bowled
+        for (var i = 0; i < Object.keys(framesWithStrikes).length; i++) {
+          if (framesWithStrikes[i] === i && framesWithStrikesBonus[i].length < 2) { //if the previous frame was a strike
+            framesWithStrikesBonus[i].push(pinsSelected); //add current bowl as bonus points for previous frame
+          }
+        }
+        framesWithStrikes[currFrame] = currFrame;
+        framesWithStrikesBonus[currFrame] = [];
+      } else if (framesWithStrikes[currFrame - 1] === currFrame - 1) {
+        framesWithStrikesBonus[currFrame - 1].push(pinsSelected);
+      } else if (spareStatus === 1) { //check for spare from previous frame
+        totalScore += pinsSelected; //add bonus points
         frameScores[currFrame - 1] = totalScore;
         spareStatus = 0;
       }
       currFrameTries[0] = pinsSelected; //add score to first try
       frameTries[currFrame] = currFrameTries; //update tries at current frame
-    } else if (currFrameTries[1] === '_') {
+    } else if (currFrameTries[0] !== 10) {
+      if (framesWithStrikes[currFrame - 1] === currFrame - 1) {
+        framesWithStrikesBonus[currFrame - 1].push(pinsSelected);
+        frameScores[currFrame - 1] = totalScore + framesWithStrikesBonus[currFrame - 1][0] + framesWithStrikesBonus[currFrame - 1][1];
+      }
       currFrameTries[1] = pinsSelected; //add score to second try
       frameTries[currFrame] = currFrameTries;
     }
@@ -100,6 +144,8 @@ class App extends React.Component {
     this.setState({
       frameTries,
       pinsRemaining: pinsAfterBowl,
+      framesWithStrikes,
+      framesWithStrikesBonus,
       totalScore,
       spareStatus
     }, () => this.updateTurn());
